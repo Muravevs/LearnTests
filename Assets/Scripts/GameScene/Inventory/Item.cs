@@ -40,7 +40,7 @@ public class Item : MonoBehaviour
             GetComponent<Renderer>().enabled = false;
         }
 
-        Debug.Log("Подобран предмет: " + itemName);
+        Debug.Log($"Подобран предмет:{itemName },id: {itemId}");
     }
 
     public void Restore()
@@ -51,6 +51,7 @@ public class Item : MonoBehaviour
             GetComponent<Collider>().enabled = true;
             GetComponent<Renderer>().enabled = true;
         }
+        Debug.Log($"Выброшен предмет:{itemName},id: {itemId}");
         canPickup = false;
     }
 }

@@ -71,6 +71,14 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(Item item)
     {
+        for (int i=0; i<items.Count;i++)
+        {
+            if (items[i].itemId == item.itemId)
+            {
+                Debug.LogError($"предмет с id = {item.itemId} уже находится в инвентаре");
+                return;
+            }
+        }
         if (item != null)
         {
             items.Add(item);
@@ -112,5 +120,10 @@ public class Inventory : MonoBehaviour
             Debug.Log($"{i + 1}. {items[i].itemName}");
         }
         Debug.Log("=========================================");
+    }
+
+    public void ContainsItem(Item item)
+    {
+        Debug.Log($"В инвентаре есть предмет с id:{item.itemId}");
     }
 }
