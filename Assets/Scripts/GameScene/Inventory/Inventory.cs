@@ -1,129 +1,91 @@
-using System;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
 
-public class Inventory : MonoBehaviour
+namespace GameScene
 {
-    [Header("Inventory Settings")]
-    public int maxSlots = 10;
-    public KeyCode pickupKey = KeyCode.E;
-    public KeyCode dropKey = KeyCode.Q;
-
-    [Header("Events")]
-    public UnityEvent<Item> onItemAdded;
-    public UnityEvent<Item> onItemRemoved;
-    public UnityEvent onInventoryFull;
-
-    private List<Item> items = new List<Item>();
-    public IReadOnlyList<Item> Items => items;
-    private List<Item> nearbyItems = new List<Item>();
-
-    void Update()
+    public sealed class Inventory : IInventory
     {
-        if (Input.GetKeyDown(pickupKey) && nearbyItems.Count > 0)
-        {
-            TryPickupClosestItem();
-        }
+        [Header("Inventory Settings")]
+        public int MaxSlots { get; private set; } = 10;
+       
 
-        if (Input.GetKeyDown(dropKey) && items.Count > 0)
-        {
-            RemoveItem();
-        }
-    }
+        private List<Item> items = new List<Item>();
+        public IReadOnlyList<Item> Items => items;
+        private List<Item> nearbyItems = new List<Item>();
+        public List<Item> NearbyItems => nearbyItems;
 
-    void OnTriggerEnter(Collider other)
-    {
-        Item item = other.GetComponent<Item>();
-        if (item != null && !nearbyItems.Contains(item))
+        public void TryPickupClosestItem()
         {
-            nearbyItems.Add(item);
-            Debug.Log("Ðÿäîì ïðåäìåò: " + item.itemName);
-        }
-    }
+            if (nearbyItems.Count == 0) return;
 
-    void OnTriggerExit(Collider other)
-    {
-        Item item = other.GetComponent<Item>();
-        if (item != null && nearbyItems.Contains(item))
-        {
-            nearbyItems.Remove(item);
-        }
-    }
+            Item itemToPickup = nearbyItems[0];
 
-    void TryPickupClosestItem()
-    {
-        if (nearbyItems.Count == 0) return;
-
-        Item itemToPickup = nearbyItems[0];
-
-        if (items.Count < maxSlots)
-        {
-            AddItem(itemToPickup);
-            nearbyItems.Remove(itemToPickup);
-        }
-        else
-        {
-            onInventoryFull?.Invoke();
-            Debug.Log("Èíâåíòàðü ïîëîí!");
-        }
-    }
-
-    public void AddItem(Item item)
-    {
-        for (int i=0; i<items.Count;i++)
-        {
-            if (items[i].itemId == item.itemId)
+            if (items.Count < MaxSlots)
             {
-                Debug.LogError($"ïðåäìåò ñ id = {item.itemId} óæå íàõîäèòñÿ â èíâåíòàðå");
-                return;
+                AddItem(itemToPickup);
+                nearbyItems.Remove(itemToPickup);
+            }
+            else
+            {
+                Debug.Log("Ð˜Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ Ð¿Ð¾Ð»Ð¾Ð½!");
             }
         }
-        if (item != null)
-        {
-            items.Add(item);
-            item.Pickup();
-            onItemAdded?.Invoke(item);
-        }
-    }
 
-    public void RemoveItem()
-    {
-        if (items.Count > 0)
+        public void AddItem(Item item)
         {
-            Item itemToRemove = items[items.Count - 1];
-            items.RemoveAt(items.Count - 1);
-            itemToRemove.Restore();
-
-            itemToRemove.transform.position = transform.position + transform.forward * 2f;
-        }
-        else
-        {
-            Debug.Log("Èíâåíòàðü ïóñò");
-        }
-    }
-
-    [ContextMenu("GetAllItems")]
-    public void GetAllItems()
-    {
-        if (items.Count == 0)
-        {
-            Debug.Log("Èíâåíòàðü ïóñò");
-            return;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i].itemId == item.itemId)
+                {
+                    Debug.LogError($"Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚ Ñ id = {item.itemId} ÑƒÐ¶Ðµ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ðµ");
+                    return;
+                }
+            }
+            if (item != null)
+            {
+                items.Add(item);
+                item.Pickup();
+            }
         }
 
-        Debug.Log("=== ÏÎËÍÛÉ ÑÏÈÑÎÊ ÏÐÅÄÌÅÒÎÂ Â ÈÍÂÅÍÒÀÐÅ ===");
-        Debug.Log($"Âñåãî ïðåäìåòîâ: {items.Count}/{maxSlots}");
-
-        for (int i = 0; i < items.Count; i++)
+        public void RemoveItem()
         {
-            Debug.Log($"{i + 1}. {items[i].itemName}");
-        }
-        Debug.Log("=========================================");
-    }
+            if (items == null || items.Count == 0)
+            {
+                Debug.Log("Ð˜Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ Ð¿ÑƒÑÑ‚");
+                return;
+            }
 
-    public void ContainsItem(Item item)
-    {
-        Debug.Log($"Â èíâåíòàðå åñòü ïðåäìåò ñ id:{item.itemId}");
+            // âœ… Ð£Ð´Ð°Ð»ÑÐµÐ¼ Ð¿Ð¾ Ð¸Ð½Ð´ÐµÐºÑÑƒ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°
+            int lastIndex = items.Count - 1;
+            Item lastItem = items[lastIndex];
+
+            items.RemoveAt(lastIndex);
+            Debug.Log($"Ð£Ð´Ð°Ð»ÐµÐ½ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚: {lastItem.itemName}, id: {lastItem.itemId}");
+        }
+
+        [ContextMenu("GetAllItems")]
+        public void GetAllItems()
+        {
+            if (items.Count == 0)
+            {
+                Debug.Log("Ð˜Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ Ð¿ÑƒÑÑ‚");
+                return;
+            }
+
+            Debug.Log("=== ÐŸÐžÐ›ÐÐ«Ð™ Ð¡ÐŸÐ˜Ð¡ÐžÐš ÐŸÐ Ð•Ð”ÐœÐ•Ð¢ÐžÐ’ Ð’ Ð˜ÐÐ’Ð•ÐÐ¢ÐÐ Ð• ===");
+            Debug.Log($"Ð’ÑÐµÐ³Ð¾ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ð¾Ð²: {items.Count}/{MaxSlots}");
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                Debug.Log($"{i + 1}. {items[i].itemName}");
+            }
+            Debug.Log("=========================================");
+        }
+
+        public void ContainsItem(Item item)
+        {
+            Debug.Log($"Ð’ Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ðµ ÐµÑÑ‚ÑŒ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚ Ñ id:{item.itemId}");
+        }
     }
 }

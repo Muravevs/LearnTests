@@ -1,17 +1,17 @@
-using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
+using GameScene;
 using UnityEngine.TestTools;
 
 public class NewTestScript
 {
-    Inventory inventory;
+    private IInventory inventory;
     Item item;
     [SetUp]
 
     public void Setup()
     {
-        inventory = new GameObject().AddComponent<Inventory>();
+        inventory = new Inventory();
         item = new GameObject().AddComponent<Item>();
     }
     [TearDown]
@@ -72,7 +72,7 @@ public class NewTestScript
         inventory.GetAllItems();
 
         LogAssert.Expect(LogType.Log, "=== ÏÎËÍÛÉ ÑÏÈÑÎÊ ÏÐÅÄÌÅÒÎÂ Â ÈÍÂÅÍÒÀÐÅ ===");
-        LogAssert.Expect(LogType.Log, $"Âסודמ ןנוהלועמג: {inventory.Items.Count}/{inventory.maxSlots}");
+        LogAssert.Expect(LogType.Log, $"Âסודמ ןנוהלועמג: {inventory.Items.Count}/{inventory.MaxSlots}");
         for (int i = 0; i < inventory.Items.Count; i++)
         {
             LogAssert.Expect(LogType.Log, $"{i + 1}. {inventory.Items[i].itemName}");

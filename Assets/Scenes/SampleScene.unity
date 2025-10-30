@@ -242,7 +242,6 @@ GameObject:
   - component: {fileID: 221954076}
   - component: {fileID: 221954075}
   - component: {fileID: 221954074}
-  - component: {fileID: 221954079}
   - component: {fileID: 221954078}
   m_Layer: 0
   m_Name: Player
@@ -352,30 +351,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.2720335, y: 2.3628516, z: 2.8843412}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &221954079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 221954073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8d1d8a5e0e310c41bdeefba4bca2c29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  maxSlots: 10
-  pickupKey: 101
-  dropKey: 113
-  onItemAdded:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemRemoved:
-    m_PersistentCalls:
-      m_Calls: []
-  onInventoryFull:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
